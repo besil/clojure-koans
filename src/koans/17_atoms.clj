@@ -5,29 +5,36 @@
 
 (meditations
   "Atoms are like refs"
-  (= __ @atomic-clock)
+  (= 0 @atomic-clock)
 
   "You can change at the swap meet"
-  (= __ (do
+  (= 1 (do
           (swap! atomic-clock inc)
           @atomic-clock))
 
   "Keep taxes out of this: swapping requires no transaction"
   (= 5 (do
-         __
+         ; (println "Initial value: " @atomic-clock)
+         (dotimes [i 4] 
+           (swap! atomic-clock inc)
+           ; (println "Iteration " i " -> " @atomic-clock)
+           )
+         ; (println "Final value: " @atomic-clock)
          @atomic-clock))
 
   "Any number of arguments might happen during a swap"
-  (= __ (do
+  (= 20 (do
+          ;(println "Initial value: " @atomic-clock)
           (swap! atomic-clock + 1 2 3 4 5)
+          ;(println "final value: " @atomic-clock)
           @atomic-clock))
 
   "Atomic atoms are atomic"
-  (= __ (do
+  (= 20 (do
           (compare-and-set! atomic-clock 100 :fin)
           @atomic-clock))
 
   "When your expectations are aligned with reality, things proceed that way"
   (= :fin (do
-            (compare-and-set! __ __ __)
+            (compare-and-set! atomic-clock 20 :fin)
             @atomic-clock)))
